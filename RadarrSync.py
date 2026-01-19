@@ -45,9 +45,16 @@ def get_config_value(config: configparser.ConfigParser, section: str, key: str) 
         logger.warning(f"Could not fetch the option {section}.{key}, defaulting to None")
         return None
 
+def raise_for_status(resp: requests.Response):
+    try:
+        resp.raise_for_status()
+    except requests.exceptions.HTTPError as e:
+        print(resp.content)
+        raise e
+
 def get_movies(radarr_instance: RadarrInstance, session: requests.Session) -> dict:
     resp = session.get(f"{radarr_instance.url}{API_PREFIX}movie?apikey={radarr_instance.api_key}")
-    resp.raise_for_status()
+    raise_for_status(resp)
     return resp.json()
 
 def sync_movies_to_target(radarr_target: RadarrInstance, source_movies: list, session: requests.Session):
@@ -77,7 +84,6 @@ def sync_movies_to_target(radarr_target: RadarrInstance, source_movies: list, se
                 radarr_target.path_from, radarr_target.path_to),
             "minimumAvailability": "released",
             "addOptions": {"searchForMovie": True}
-            # images???
         }
         logger.debug(payload)
 
@@ -85,11 +91,7 @@ def sync_movies_to_target(radarr_target: RadarrInstance, source_movies: list, se
             f"{radarr_target.url}{API_PREFIX}movie?apikey={radarr_target.api_key}",
             data=json.dumps(payload),
             headers={'Content-Type': 'application/json'})
-        try:
-            resp.raise_for_status()
-        except requests.exceptions.HTTPError as e:
-            print(resp.content)
-            raise e
+        raise_for_status(resp)
 
         logger.info(f"Added movie {source_movie['title']} to {radarr_target.name} server")
 
