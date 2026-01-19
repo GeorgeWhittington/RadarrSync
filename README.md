@@ -33,7 +33,8 @@ Radarr does not support saving files to different folder roots for different qua
 
 Create a python venv and install requirements.txt into it. Then set up a cron job on the interval of your choice to run the script RadarrSync.py using the python executable in that virtual environment. The script has the following arguments/parameters:
 
-- --config_file - The absolute or relative path to the config file you wish to use (Config.txt)
+- --config_file - The absolute or relative path to the config file you wish to use
+   - (eg: Config.txt)
 - --source_section - The section in the config file which contains the movies you want to sync to all other sections
   - (eg: if you set --source_section=Radarr, then any movies that exist in "Radarr" would be copied across to any/all of the other radarr instances you define in your config file)
 - --verbose - OPTIONAL, enables the debug log level
