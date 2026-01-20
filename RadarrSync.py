@@ -29,12 +29,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--config_file", required=True,
                         help="Relative or absolute path to your config file (See Config.txt for an example)")
     parser.add_argument("--source_section", required=True,
-                        description="The section from the config file which you want to treat as the source. Movies on the source"
-                                    "are copied to all other sections if all conditions are met")
+                        help="The section from the config file which you want to treat as the source. Movies on the source"
+                             "are copied to all other sections if all conditions are met")
     parser.add_argument("--log_file", default=None,
-                        description="Name of the log file you wish to use (if not defined, logs go to stdout)")
+                        help="Name of the log file you wish to use (if not defined, logs go to stdout)")
     parser.add_argument("--verbose", "-v", action="store_true",
-                        description="Enables DEBUG level logging")
+                        help="Enables DEBUG level logging")
     return parser.parse_args()
 
 def read_config(config_file: str):
