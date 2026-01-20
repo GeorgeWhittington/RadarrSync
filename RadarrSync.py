@@ -78,7 +78,7 @@ def sync_movies_to_target(radarr_target: RadarrInstance, source_movies: list, se
             continue
 
         path = source_movie["path"]
-        path.replace(radarr_target.path_from, radarr_target.path_to)
+        path = path.replace(radarr_target.path_from, radarr_target.path_to)
 
         # New movie! Sync it across
         payload = {
