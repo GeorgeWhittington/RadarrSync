@@ -26,30 +26,34 @@ def parse_args() -> argparse.Namespace:
         prog="RadarrSync.py",
         description="""Simple script that syncs all movies detected on one
         radarr instance to another""")
-    parser.add_argument("--config_file", required=True)
-    parser.add_argument("--source_section", required=True)
-    parser.add_argument("--verbose", "-v", action="store_true")
+    parser.add_argument("--config_file", required=True,
+                        help="Relative or absolute path to your config file (See Config.txt for an example)")
+    parser.add_argument("--source_section", required=True,
+                        description="The section from the config file which you want to treat as the source. Movies on the source"
+                                    "are copied to all other sections if all conditions are met")
+    parser.add_argument("--log_file", default=None,
+                        description="Name of the log file you wish to use (if not defined, logs go to stdout)")
+    parser.add_argument("--verbose", "-v", action="store_true",
+                        description="Enables DEBUG level logging")
     return parser.parse_args()
 
 def read_config(config_file: str):
     config = configparser.ConfigParser()
     resp = config.read(config_file)
     if len(resp) < 0:
-        raise SystemExit(f"Error: could not load the config file '{config_file}'")
-    return config
+        try:
+            raise SystemExit(f"Error: could not load the config file '{config_file}'")
+        except SystemExit as e:
+            logger.exception("Error reading config")
+            raise e
 
-def get_config_value(config: configparser.ConfigParser, section: str, key: str) -> Any:
-    try:
-        return config[section][key]
-    except:
-        logger.warning(f"Could not fetch the option {section}.{key}, defaulting to None")
-        return None
+    return config
 
 def raise_for_status(resp: requests.Response):
     try:
         resp.raise_for_status()
     except requests.exceptions.HTTPError as e:
-        print(resp.content)
+        logger.exception(resp.content)
         raise e
 
 def get_movies(radarr_instance: RadarrInstance, session: requests.Session) -> dict:
@@ -99,7 +103,7 @@ def main():
     args = parse_args()
     config = read_config(args.config_file)
 
-    logging.basicConfig(level=logging.DEBUG if args.verbose else logging.INFO)
+    logging.basicConfig(filename=args.log_file, level=logging.DEBUG if args.verbose else logging.INFO)
 
     radarr_source = RadarrInstance(args.source_section, config[args.source_section], True)
     radarr_targets = [RadarrInstance(section, config[section], False) for section in config.sections() if section != args.source_section]
