@@ -77,6 +77,9 @@ def sync_movies_to_target(radarr_target: RadarrInstance, source_movies: list, se
             logging.debug(f"{source_movie['title']} already in {radarr_target.name} library")
             continue
 
+        path = source_movie["path"]
+        path.replace(radarr_target.path_from, radarr_target.path_to)
+
         # New movie! Sync it across
         payload = {
             "title": source_movie["title"],
@@ -84,8 +87,7 @@ def sync_movies_to_target(radarr_target: RadarrInstance, source_movies: list, se
             "titleSlug": source_movie["titleSlug"],
             "tmdbId": source_movie["tmdbId"],
             "monitored": source_movie["monitored"],
-            "path": source_movie["path"].replace(
-                radarr_target.path_from, radarr_target.path_to),
+            "path": path,
             "minimumAvailability": "released",
             "addOptions": {"searchForMovie": True}
         }
