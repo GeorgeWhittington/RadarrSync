@@ -7,8 +7,8 @@ url = http://127.0.0.1:8080
 api_key = FCKGW-RHQQ2-YXRKT-8TG6W-2B7Q8
 
 # Use these two lines to perform a string replacemnet on the movie path
-path_from = '/Movies/'
-path_to = '/4KMovies/'
+path_from = /Movies/
+path_to = /4KMovies/
 
 # This matches the profile ID from the source Radarr instance
 source_profile = 5
